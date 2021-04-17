@@ -1,0 +1,47 @@
+### CAP 含义
+##### Consistency
+所有客户端在同一时间看到的数据都相同。这对分布式系统来说，最大的问题就是不同node之间的数据同步，一旦数据写入了主节点，那么数据就要尽快同步到其他所有副本节点中。
+一致性是从server端的角度来看的, 与就是server端各个节点之间数据是否一致的问题。
+
+```mermaid
+graph LR
+    Client --write data--> S[B Load Balancer]
+    S --write data--> S1[B1 Service]
+    S --write data--> S2[B2 Service]
+    S --write data--> S3[B3 Service]
+```
+##### Availability
+即使有几点故障的情况下，任一客户端发起的请求都会得到一个合法的响应。
+可用性是从client端的角度来看的，这个比较好理解。
+```mermaid
+graph LR
+    Client --request--> S[B Load Balancer]
+    S --request--> S1[B1 Service]
+    S --request--> S2[B2 Service]
+    S --request--> S3[B3 Service]
+    S --response--> Client
+```
+
+##### Partition tolerance
+分区容错性是在分布式系统内的通信中断问题,即两个节点之间的连接丢失或暂时性的延迟。
+分区容错性是从分布式系统内存的server端角度来看的，也就是server端各个节点在通信时问题，通信可能会失败。
+
+                                          
+```mermaid
+graph LR
+    Client --write data--> S[B Load Balancer]
+    S --write data--> S1[B1 Service]
+    S --write data--> S3[B3 Service]
+    S --write data--> S2[B2 Service] 
+```
+
+```mermaid
+graph LR
+    S1 --sync fail--> S2
+    S1 --sync fail--> S3
+```
+假设数据写到了B1 Service的所在节点，那么在B1节点同步数据到B2和B3的时候可能因为网络问题而失败，这就是分区之间的通信中断问题。
+
+### Reference
+1. https://www.ibm.com/cloud/learn/cap-theorem
+2. https://www.infoq.cn/article/cap-twelve-years-later-how-the-rules-have-changed
